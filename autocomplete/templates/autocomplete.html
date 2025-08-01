@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shakespeare Autocomplete</title>
+    <style>
+        .suggestions { border: 1px solid #ccc; max-width: 300px; margin-top: 5px; }
+        .suggestions div { padding: 5px; cursor: pointer; }
+        .suggestions div:hover { background-color: #eee; }
+    </style>
+</head>
+<body>
+    <h2>Type something from Shakespeare:</h2>
+    <input type="text" id="searchBox" onkeyup="getSuggestions()" placeholder="Try 'th', 'bea', etc.">
+    <div class="suggestions" id="suggestionList"></div>
+
+    <script>
+        function getSuggestions() {
+            const query = document.getElementById('searchBox').value;
+            if (!query) {
+                document.getElementById('suggestionList').innerHTML = '';
+                return;
+            }
+            fetch(`/api/suggest/?query=${query}`)
+                .then(res => res.json())
+                .then(data => {
+                    const list = document.getElementById('suggestionList');
+                    list.innerHTML = '';
+                    data.suggestions.forEach(word => {
+                        const div = document.createElement('div');
+                        div.textContent = word;
+                        div.onclick = () => document.getElementById('searchBox').value = word;
+                        list.appendChild(div);
+                    });
+                });
+        }
+    </script>
+</body>
+</html>
